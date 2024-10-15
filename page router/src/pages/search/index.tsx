@@ -1,26 +1,44 @@
 import SearchableLayout from "@/components/searchable-layout";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import BookItem from "@/components/book-item";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import {
+  GetServerSidePropsContext,
+  GetStaticPropsContext,
+  InferGetServerSidePropsType,
+} from "next";
 import fetchBooks from "@/lib/fetch-books";
+import { useRouter } from "next/router";
+import { BookData } from "@/types";
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
-  // context에는 현재 브라우저로부터 받은 요청에 대한 모든 정보가 담겨있음
-  const q = context.query.q;
-  const books = await fetchBooks(q as string);
+// export const getStaticProps = async (context: GetStaticPropsContext) => {
+//   // context에는 현재 브라우저로부터 받은 요청에 대한 모든 정보가 담겨있음
+//   const q = context.query.q;
+//   const books = await fetchBooks(q as string);
 
-  return {
-    props: {
-      books,
-    },
+//   return {
+//     props: {
+//       books,
+//     },
+//   };
+// };
+
+export default function SearchPage() {
+  const [books, setBooks] = useState<BookData[]>([]);
+
+  const router = useRouter();
+  const q = router.query.q;
+
+  const fetchSearchResult = async () => {
+    const data = await fetchBooks(q as string);
+    setBooks(data);
   };
-};
 
-export default function SearchPage({
-  books,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  useEffect(() => {
+    if (q) {
+      fetchSearchResult();
+    }
+  }, [q]);
+
   return (
     <div>
       {books.map((book) => (
