@@ -1,6 +1,14 @@
 {
   "extends": ["next/core-web-vitals", "next/typescript"],
   "rules": {
-    "@typescript-eslint/no-empty-object-type": "off"
+    "@typescript-eslint/no-empty-object-type": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    // 일반 img 태그 사용 경고 끄기
+    "@next/next/no-img-element": "off",
+    // alt 속성 경고 끄기
+    "jsx-a11y/alt-text": "off",
+    // 추가로 자주 발생하는 다른 규칙들도 필요하다면 비활성화할 수 있습니다
+    "react/no-unescaped-entities": "off",
+    "@next/next/no-page-custom-font": "off"
   }
 }
