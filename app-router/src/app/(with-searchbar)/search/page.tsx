@@ -9,7 +9,8 @@ export default async function Page({
   const resolvedSearchParams = await searchParams;
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/search?q=${resolvedSearchParams.q}`
+    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/search?q=${resolvedSearchParams.q}`,
+    { cache: "force-cache" }
   );
   if (!response.ok) {
     return <div>오류가 발생했습니다..</div>;

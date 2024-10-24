@@ -1,4 +1,11 @@
+import { notFound } from "next/navigation";
 import style from "./page.module.css";
+
+// 동적 경로를 갖는 페이지 파라미터들을 미리 build 타임에 렌더링 되도록 설정
+// Page 컴포넌트에서 캐싱하지 않더라도 이 페이지는 정적 페이지로 강제 설정 -> 풀 라우트 캐시
+export function generateStaticParams() {
+  return [{ id: "1" }, { id: "2" }, { id: "3" }];
+}
 
 type BookPageProps = {
   params: Promise<{
@@ -14,6 +21,9 @@ export default async function Page({ params }: BookPageProps) {
     `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${resolvedParams.id}`
   );
   if (!response.ok) {
+    if (response.status === 404) {
+      notFound();
+    }
     return <div>오류가 발생했습니다..</div>;
   }
 
