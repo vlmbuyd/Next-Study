@@ -1,6 +1,10 @@
 import { notFound } from "next/navigation";
 import style from "./page.module.css";
 
+// generateStaticParams에서 설정한 url 파라미터 외에는 404 페이지로 리다이렉트 시키고 싶다면..
+// dynamicParams = true로 설정하거나 변수 선언을 생략하면, (ex. id: 4)같은 페이지는 실시간으로 생성하여  응답
+// export const dynamicParams = false;
+
 // 동적 경로를 갖는 페이지 파라미터들을 미리 build 타임에 렌더링 되도록 설정
 // Page 컴포넌트에서 캐싱하지 않더라도 이 페이지는 정적 페이지로 강제 설정 -> 풀 라우트 캐시
 export function generateStaticParams() {
