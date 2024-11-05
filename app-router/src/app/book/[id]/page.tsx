@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 import style from "./page.module.css";
 
 // generateStaticParams에서 설정한 url 파라미터 외에는 404 페이지로 리다이렉트 시키고 싶다면..
-// dynamicParams = true로 설정하거나 변수 선언을 생략하면, (ex. id: 4)같은 페이지는 실시간으로 생성하여  응답
 // export const dynamicParams = false;
+// dynamicParams = true로 설정하거나 변수 선언을 생략하면, (ex. id: 4)같은 페이지는 실시간으로 생성하여  응답
 
 // 동적 경로를 갖는 페이지 파라미터들을 미리 build 타임에 렌더링 되도록 설정
 // Page 컴포넌트에서 캐싱하지 않더라도 이 페이지는 정적 페이지로 강제 설정 -> 풀 라우트 캐시
@@ -11,18 +11,9 @@ export function generateStaticParams() {
   return [{ id: "1" }, { id: "2" }, { id: "3" }];
 }
 
-type BookPageProps = {
-  params: Promise<{
-    id: string;
-  }>;
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
-};
-
-export default async function Page({ params }: BookPageProps) {
-  const resolvedParams = await params;
-
+async function BookDetail({ bookId }: { bookId: string }) {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${resolvedParams.id}`
+    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${bookId}`
   );
   if (!response.ok) {
     if (response.status === 404) {
@@ -36,7 +27,7 @@ export default async function Page({ params }: BookPageProps) {
     book;
 
   return (
-    <div className={style.container}>
+    <section>
       <div
         className={style.cover_img_container}
         style={{ backgroundImage: `url('${coverImgUrl}')` }}
@@ -49,6 +40,44 @@ export default async function Page({ params }: BookPageProps) {
         {author} | {publisher}
       </div>
       <div className={style.description}>{description}</div>
+    </section>
+  );
+}
+
+function ReviewEditor() {
+  async function createReviewAction(formData: FormData) {
+    "use server";
+
+    const contents = formData.get("content")?.toString();
+    const author = formData.get("author")?.toString();
+
+    console.log(contents);
+    console.log(author);
+  }
+
+  return (
+    <section>
+      <form action={createReviewAction}>
+        <input name="content" placeholder="리뷰 내용" />
+        <input name="author" placeholder="작성자" />
+        <button type="submit">작성하기</button>
+      </form>
+    </section>
+  );
+}
+
+type BookPageProps = {
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export default async function Page({ params }: BookPageProps) {
+  const resolvedParams = await params;
+
+  return (
+    <div className={style.container}>
+      <BookDetail bookId={resolvedParams.id} />
+      <ReviewEditor />
     </div>
   );
 }

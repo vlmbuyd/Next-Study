@@ -26,27 +26,19 @@ async function SearchResult({ q }: { q?: string | undefined }) {
   );
 }
 
-export default function Page({
+export default async function Page({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string }>;
 }) {
+  const resolvedSearchParams = await searchParams;
+
   return (
     <Suspense
-      key={searchParams.q || ""}
+      key={resolvedSearchParams.q || ""}
       fallback={<BookListSkeleton count={3} />}
     >
-      <SearchResult q={searchParams.q || ""} />
+      <SearchResult q={resolvedSearchParams.q || ""} />
     </Suspense>
   );
 }
-
-// export default async function Page({
-//   searchParams,
-// }: {
-//   searchParams: Promise<{ q?: string }>;
-// }) {
-//   const resolvedSearchParams = await searchParams;
-
-//   return <SearchResult q={resolvedSearchParams || ""} />;
-// }
