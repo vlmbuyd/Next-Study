@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import style from "./page.module.css";
+import { createReviewAction } from "@/actions/create-review.action";
 
 // generateStaticParams에서 설정한 url 파라미터 외에는 404 페이지로 리다이렉트 시키고 싶다면..
 // export const dynamicParams = false;
@@ -44,22 +45,13 @@ async function BookDetail({ bookId }: { bookId: string }) {
   );
 }
 
-function ReviewEditor() {
-  async function createReviewAction(formData: FormData) {
-    "use server";
-
-    const contents = formData.get("content")?.toString();
-    const author = formData.get("author")?.toString();
-
-    console.log(contents);
-    console.log(author);
-  }
-
+function ReviewEditor({ bookId }: { bookId: string }) {
   return (
     <section>
       <form action={createReviewAction}>
-        <input name="content" placeholder="리뷰 내용" />
-        <input name="author" placeholder="작성자" />
+        <input name="bookId" value={bookId} hidden readOnly />
+        <input required name="content" placeholder="리뷰 내용" />
+        <input required name="author" placeholder="작성자" />
         <button type="submit">작성하기</button>
       </form>
     </section>
@@ -77,7 +69,7 @@ export default async function Page({ params }: BookPageProps) {
   return (
     <div className={style.container}>
       <BookDetail bookId={resolvedParams.id} />
-      <ReviewEditor />
+      <ReviewEditor bookId={resolvedParams.id} />
     </div>
   );
 }
