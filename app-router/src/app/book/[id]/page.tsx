@@ -12,8 +12,21 @@ import { Metadata } from "next";
 
 // 동적 경로를 갖는 페이지 파라미터들을 미리 build 타임에 렌더링 되도록 설정
 // Page 컴포넌트에서 캐싱하지 않더라도 이 페이지는 정적 페이지로 강제 설정 -> 풀 라우트 캐시
-export function generateStaticParams() {
-  return [{ id: "1" }, { id: "2" }, { id: "3" }];
+export async function generateStaticParams() {
+  // 존재하는 모든 도서에 대해 빌드타임에 정적으로 페이지 설정
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book`
+  );
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const books: BookData[] = await response.json();
+
+  return books.map((book) => ({
+    id: book.id.toString(),
+  }));
 }
 
 async function BookDetail({ bookId }: { bookId: string }) {

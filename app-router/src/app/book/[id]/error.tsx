@@ -14,7 +14,7 @@ export default function Error({
 
   useEffect(() => {
     console.error(error.message);
-  }, []);
+  }, [error.message]);
 
   return (
     <div>
