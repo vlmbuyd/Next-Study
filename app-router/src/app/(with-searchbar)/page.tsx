@@ -4,6 +4,7 @@ import { BookData } from "@/types";
 import { delay } from "@/util/delay";
 import { Suspense } from "react";
 import BookListSkeleton from "@/components/skeleton/book-list-skeleton";
+import { Metadata } from "next";
 
 // export const dynamic = "force-dynamic";
 // 특정 페이지의 유형을 강제로 Static 또는 Dynamic 페이지로 설정
@@ -53,6 +54,18 @@ async function RecoBooks() {
 }
 
 export const dynamic = "force-dynamic";
+
+// metadat라는 약속된 변수를 선언하여 export 해주면
+// 이 변수에 저장된 값이 현재 페이지의 메타데이터(SEO)로써 설정 됨
+export const metadata: Metadata = {
+  title: "한입 북스",
+  description: "한입 북스에 등록된 도서를 만나보세요",
+  openGraph: {
+    title: "한입 북스",
+    description: "한입 북스에 등록된 도서를 만나보세요",
+    images: ["/thumbnail.png"],
+  },
+};
 
 export default function Home() {
   return (
