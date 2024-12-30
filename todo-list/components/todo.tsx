@@ -1,18 +1,39 @@
 'use client';
 
 import { Checkbox, IconButton } from '@material-tailwind/react';
+import { updateTodo } from 'actions/todo-actions';
+import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
+import { queryClient } from 'config/ReactQueryClientProvider';
 
 export default function Todo({ todo }) {
     const [isEditing, setIsEditing] = useState(false);
     const [completed, setCompleted] = useState(todo.completed);
     const [title, setTitle] = useState(todo.title);
 
+    const updateTodoMutation = useMutation({
+        mutationFn: () =>
+            updateTodo({
+                id: todo.id,
+                title,
+                completed,
+            }),
+        onSuccess: () => {
+            setIsEditing(false);
+            queryClient.invalidateQueries({
+                queryKey: ['todos'],
+            });
+        },
+    });
+
     return (
         <div className="w-full flex items-center gap-1">
             <Checkbox
                 checked={completed}
-                onChange={(e) => setCompleted(e.target.checked)}
+                onChange={(e) => {
+                    setCompleted(e.target.checked);
+                    updateTodoMutation.mutate();
+                }}
             />
 
             {isEditing ? (
