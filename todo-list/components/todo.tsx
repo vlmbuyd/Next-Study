@@ -1,7 +1,7 @@
 'use client';
 
-import { Checkbox, IconButton } from '@material-tailwind/react';
-import { updateTodo } from 'actions/todo-actions';
+import { Checkbox, IconButton, Spinner } from '@material-tailwind/react';
+import { deleteTodo, updateTodo } from 'actions/todo-actions';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { queryClient } from 'config/ReactQueryClientProvider';
@@ -20,6 +20,15 @@ export default function Todo({ todo }) {
             }),
         onSuccess: () => {
             setIsEditing(false);
+            queryClient.invalidateQueries({
+                queryKey: ['todos'],
+            });
+        },
+    });
+
+    const deleteTodoMutation = useMutation({
+        mutationFn: () => deleteTodo(todo.id),
+        onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['todos'],
             });
@@ -49,8 +58,17 @@ export default function Todo({ todo }) {
             )}
 
             {isEditing ? (
-                <IconButton onClick={() => setIsEditing(false)}>
-                    <i className="fas fa-check" />
+                <IconButton
+                    onClick={() => {
+                        setIsEditing(false);
+                        updateTodoMutation.mutate();
+                    }}
+                >
+                    {updateTodoMutation.isPending ? (
+                        <Spinner />
+                    ) : (
+                        <i className="fas fa-check" />
+                    )}
                 </IconButton>
             ) : (
                 <IconButton onClick={() => setIsEditing(true)}>
@@ -58,8 +76,12 @@ export default function Todo({ todo }) {
                 </IconButton>
             )}
 
-            <IconButton>
-                <i className="fas fa-trash" />
+            <IconButton onClick={() => deleteTodoMutation.mutate()}>
+                {deleteTodoMutation.isPending ? (
+                    <Spinner />
+                ) : (
+                    <i className="fas fa-trash" />
+                )}
             </IconButton>
         </div>
     );
